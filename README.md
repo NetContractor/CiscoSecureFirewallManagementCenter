@@ -53,7 +53,7 @@ When FMC rejects a request, its error message is shown.
 ## Installation
 
 ```bash
-git clone https://github.com/<your-account>/fmc-setup.git
+git clone https://github.com/NetContractor/CiscoSecureFirewallManagementCenter.git
 cd fmc-setup
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
