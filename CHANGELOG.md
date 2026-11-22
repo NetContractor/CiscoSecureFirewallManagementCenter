@@ -3,6 +3,18 @@
 All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2026-11-22
+
+### Added
+- Option `16`: configuration drift report. It compares the workbook with the current FMC configuration
+  (security zones, Access Control Policy rules and categories, ports, port groups, hosts, networks, ranges,
+  network groups) and writes a copy of the workbook with missing rows in red, FMC-only rows in green and
+  differing cells in yellow, plus a Drift sheet listing every finding. Read-only; objects the workbook
+  cannot describe are reported as not comparable, never as drift.
+
+### Changed
+- The `Exit` option is now `17` (was `16`).
+
 ## [1.0.0] - 2026-10-25
 
 First release.

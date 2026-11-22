@@ -33,7 +33,8 @@ migration to another FMC.
 | `13` | Create an FTD High Availability pair | `HA` |
 | `14` | Create an EtherChannel on the primary firewall | `EtherChannel` |
 | `15` | Create subinterfaces on EtherChannels | `SubInterfaces` |
-| `16` | Exit | none |
+| `16` | Configuration drift report: compare the workbook with FMC (read-only) | `SecurityZones`, `ACP`, `Categories`, `Port`, `PortGroup`, `HostNetwork`, `NetworkGroup` |
+| `17` | Exit | none |
 
 The FMC client handles:
 - pagination (collections larger than 1000 objects)
@@ -52,7 +53,7 @@ When FMC rejects a request, its error message is shown.
 ## Installation
 
 ```bash
-git clone https://github.com/NetContractor/CiscoSecureFirewallManagementCenter.git
+git clone https://github.com/<your-account>/fmc-setup.git
 cd fmc-setup
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -229,6 +230,31 @@ The workbook can describe only part of the FMC configuration. Everything it cann
 | Device registration and physical interface configuration | Not described by the export; the `Devices`/`Interfaces` sheets are for initial device setup (options 1-2), not reported back |
 
 Network groups are ordered so that nested groups come after the groups they contain.
+
+## Configuration drift report
+
+Option `16` compares the workbook with what is really configured on FMC and writes the result to
+`fmc-drift-<host>-<date>.xlsx`. It is read-only: nothing is changed on FMC, and your workbook is not modified -
+the report is a copy of it.
+
+| Color | Meaning |
+|---|---|
+| Red row | In the workbook, but not on FMC |
+| Green row | On FMC, but not in the workbook (added at the bottom of the sheet) |
+| Yellow cell | In both, but different. The FMC value is in the cell comment |
+| Grey row | Exists on FMC, but uses settings the workbook cannot describe |
+
+The **Drift** sheet lists every finding with its sheet, object, status and details. If the Access Control Policy
+rules are in a different order on FMC, that is reported there too. The ACP policy is the one named in `ACP!A2`.
+
+What is compared:
+- Objects are matched by name. Object type columns in `ACP` are only a lookup hint for the import, so they are not compared.
+- `ACP` rules are compared by category, zones, source and destination objects, services and action.
+- System defined objects (e.g. `HTTPS`) are not compared.
+- Rules and objects that the workbook cannot describe (see [the export limits](#configuration-export-to-a-workbook))
+  are shown as not comparable. They are never reported as drift.
+- `Devices`, `Interfaces`, `HA`, `EtherChannel` and `SubInterfaces` are not compared yet. A sheet that is missing
+  from the workbook is skipped and listed on the **Drift** sheet.
 
 ## Development
 

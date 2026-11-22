@@ -11,6 +11,7 @@ from fmc_setup import __version__, actions
 from fmc_setup.client import FMCClient, SetupError
 from fmc_setup.config_export import export_configuration
 from fmc_setup.console import read_secret
+from fmc_setup.drift import drift_report
 from fmc_setup.export import export_policy_to_csv
 from fmc_setup.workbook import SetupWorkbook
 
@@ -33,7 +34,8 @@ MENU = (
     ("13", "Add HA", actions.add_ha),
     ("14", "Add Port-Channel", actions.add_etherchannel),
     ("15", "Add subinterface to Port-Channel", actions.add_subinterfaces),
-    ("16", "END program", None),
+    ("16", "Config drift report (xlsx vs FMC)", drift_report),
+    ("17", "END program", None),
 )
 
 
@@ -102,6 +104,7 @@ def run(args):
     actions_by_number = {number: action for number, _, action in MENU}
     actions_by_number["11"] = functools.partial(export_policy_to_csv, output_dir=args.output_dir)
     actions_by_number["12"] = functools.partial(export_configuration, output_dir=args.output_dir)
+    actions_by_number["16"] = functools.partial(drift_report, output_dir=args.output_dir)
 
     try:
         fmc = connect(args)
